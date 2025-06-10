@@ -2,47 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Orders</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Orders Table</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Orders</h1>
-    <button id="showOrdersFormBtn" class="btn btn-success">+ Add New Order</button>
-    <table id="ordersTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Customer ID</th>
-          <th>Order Date</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="ordersFormSection" class="d-none">
-    <form id="ordersForm">
-      <h2 id="ordersFormTitle">Insert Order</h2>
-      <div class="row">
-        <div class="col">
-          <label>Customer ID</label>
-          <input type="number" id="customer_id" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Order Date</label>
-          <input type="date" id="order_date" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Total</label>
-          <input type="number" id="total" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelOrdersFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    <
+  <h1>Orders List</h1>
+
+  <form id="addOrderForm" onsubmit="addNewOrder(event)">
+    <input type="number" id="CustomerId" placeholder="Customer ID" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="ordersTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer ID</th>
+        <th>Created At</th>
+      </tr>
+    </thead>
+    <tbody id="ordersBody"></tbody>
+  </table>
+
+  <script>
+    const getOrdersAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/orders";
+
+    async function fetchOrders() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const table = document.getElementById('ordersTable');
+      const tbody = document.getElementById('ordersBody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        table.style.display = 'none';
+
+        const response = await fetch(getOrdersAPI);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const orders = await response.json();
+        tbody.innerHTML = '';
+
+        orders.forEach(order => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${order.id}</td>
+            <td>${order.customer_id}</td>
+            <td>${new Date(order.created_at).toLocaleString()}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        loadingEl.style.display = 'none';
+        table.style.display = 'table';
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Failed to load orders: ' + err.message;
+      }
+    }
+
+    fetchOrders();
+
+    async function addNewOrder(event) {
+      event.preventDefault();
+      const customer_id = document.getElementById('CustomerId').value;
+
+      try {
+        await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addOrder', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ customer_id })
+        });
+
+        fetchOrders();
+        document.getElementById('addOrderForm').reset();
+      } catch (err) {
+        console.error("Error adding order:", err);
+      }
+    }
+  </script>
+
+</body>
+</html>

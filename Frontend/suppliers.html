@@ -2,47 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Suppliers</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Suppliers</h1>
-    <button id="showSuppliersFormBtn" class="btn btn-success">+ Add New Supplier</button>
-    <table id="suppliersTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Supplier ID</th>
-          <th>Name</th>
-          <th>Contact</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="suppliersFormSection" class="d-none">
-    <form id="suppliersForm">
-      <h2 id="suppliersFormTitle">Insert Supplier</h2>
-      <div class="row">
-        <div class="col">
-          <label>Name</label>
-          <input type="text" id="name" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Contact</label>
-          <input type="text" id="contact" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelSuppliersFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+  <h1>Suppliers List</h1>
 
-  <script src="JS/suppliers.js"></script>
+  <form id="addSupplierForm" onsubmit="addNewSupplier(event)">
+    <input type="text" id="Name" placeholder="Name" required />
+    <input type="text" id="Contact" placeholder="Contact Info" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="supplierTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Contact</th>
+      </tr>
+    </thead>
+    <tbody id="supplierBody"></tbody>
+  </table>
+
+<script>
+  const getSuppliersAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/suppliers";
+
+  async function fetchSuppliers() {
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const table = document.getElementById('supplierTable');
+    const tbody = document.getElementById('supplierBody');
+
+    try {
+      loadingEl.style.display = 'block';
+      errorEl.style.display = 'none';
+      table.style.display = 'none';
+
+      const response = await fetch(getSuppliersAPI);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      tbody.innerHTML = '';
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.contact}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      loadingEl.style.display = 'none';
+      table.style.display = 'table';
+    } catch (err) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+      errorEl.textContent = 'Failed to load suppliers: ' + err.message;
+    }
+  }
+
+  fetchSuppliers();
+
+  async function addNewSupplier(event) {
+    event.preventDefault();
+    const name = document.getElementById('Name').value;
+    const contact = document.getElementById('Contact').value;
+
+    try {
+      await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addSupplier', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, contact })
+      });
+
+      fetchSuppliers();
+      document.getElementById('addSupplierForm').reset();
+    } catch (err) {
+      console.error("Error adding supplier:", err);
+    }
+  }
+</script>
+
 </body>
 </html>

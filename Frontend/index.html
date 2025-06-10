@@ -11,10 +11,10 @@
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #fefefe;
+      background-color: #f9f5f0;
       margin: 0;
       padding: 20px;
-      color: #222;
+      color: #4e342e;
     }
 
     header {
@@ -25,7 +25,13 @@
     header h1 {
       font-weight: 700;
       font-size: 2.5rem;
-      color: #8e44ad;
+      color: #6d4c41;
+      margin-bottom: 5px;
+    }
+
+    header p {
+      font-size: 1rem;
+      color: #8d6e63;
     }
 
     .dashboard {
@@ -37,41 +43,49 @@
     }
 
     .card {
-      background: white;
+      background: #fff8f1;
       border-radius: 12px;
       padding: 25px 20px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 12px rgba(78, 52, 46, 0.1);
       text-align: center;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       cursor: pointer;
+      border: 1px solid #d7ccc8;
     }
 
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 16px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 10px 16px rgba(78, 52, 46, 0.15);
     }
 
     .card h2 {
       margin: 10px 0;
-      color: #5d3370;
+      color: #5d4037;
+      font-size: 1.25rem;
     }
 
     .card p {
-      color: #7f8c8d;
+      color: #795548;
       font-size: 0.9rem;
     }
 
     footer {
       margin-top: 40px;
-      color: white;
-      background-color: #5d3370;
+      color: #fff3e0;
+      background-color: #6d4c41;
       padding: 20px;
       text-align: center;
       font-family: Arial, sans-serif;
     }
 
+    footer h6 {
+      margin: 4px 0;
+      font-size: 0.95rem;
+      color: #ffe0b2;
+    }
+
     footer a {
-      color: #ffd700;
+      color: #ffd54f;
       text-decoration: none;
       font-weight: bold;
     }
@@ -80,57 +94,57 @@
 <body>
 
   <header>
-    <h1>Café Management System</h1>
-    <p>Select a section to manage</p>
+    <h1>Cafe Management System</h1>
+    <p>Select a table to see data</p>
   </header>
 
   <main class="dashboard">
-    <div class="card" onclick="openTable('Customers')">
+    <div class="card" onclick="openTable('categories')">
+      <h2>Categories</h2>
+      <p>Manage menu categories</p>
+    </div>
+    <div class="card" onclick="openTable('customers')">
       <h2>Customers</h2>
       <p>Manage customer data</p>
     </div>
-    <div class="card" onclick="openTable('Employees')">
+    <div class="card" onclick="openTable('employees')">
       <h2>Employees</h2>
       <p>Manage staff and roles</p>
     </div>
-    <div class="card" onclick="openTable('Inventory')">
+    <div class="card" onclick="openTable('inventory')">
       <h2>Inventory</h2>
       <p>Track stock levels</p>
     </div>
-    <div class="card" onclick="openTable('MenuItems')">
+    <div class="card" onclick="openTable('menu_items')">
       <h2>Menu Items</h2>
       <p>Manage menu offerings</p>
     </div>
-    <div class="card" onclick="openTable('Orders')">
+    <div class="card" onclick="openTable('orders')">
       <h2>Orders</h2>
       <p>Track customer orders</p>
     </div>
-    <div class="card" onclick="openTable('OrderItems')">
+    <div class="card" onclick="openTable('order_items')">
       <h2>Order Items</h2>
       <p>Items in each order</p>
     </div>
-    <div class="card" onclick="openTable('Payments')">
+    <div class="card" onclick="openTable('payments')">
       <h2>Payments</h2>
       <p>Handle transactions</p>
     </div>
-    <div class="card" onclick="openTable('Suppliers')">
+    <div class="card" onclick="openTable('suppliers')">
       <h2>Suppliers</h2>
       <p>Manage suppliers</p>
     </div>
-    <div class="card" onclick="openTable('Tables')">
+    <div class="card" onclick="openTable('tables')">
       <h2>Tables</h2>
       <p>Assign and manage tables</p>
-    </div>
-    <div class="card" onclick="openTable('Reservations')">
-      <h2>Reservations</h2>
-      <p>Track reservations</p>
     </div>
   </main>
 
   <footer>
-    Made by 
-    <h6>Laiba</h6>
-    <h6>Samapati</h6>
+    <h6>Made by Laiba</h6>
+    <h6>&</h6>
+    <h6> Samapati</h6>
   </footer>
 
   <script>

@@ -3,59 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Customers Table</title>
+  <title>Employees List</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <h1>Customers List</h1>
+  <h1>Employees List</h1>
 
-  <form id="addCustomerForm" onsubmit="addNewCustomer(event)">
-    <input type="text" id="Name" placeholder="Customer Name" required />
-    <input type="text" id="Phone" placeholder="Phone Number" required />
+  <form id="addEmployeeForm" onsubmit="addNewEmployee(event)">
+    <input type="text" id="Name" placeholder="Full Name" required />
+    <input type="text" id="Role" placeholder="Role" required />
     <button type="submit">Add</button>
   </form>
 
   <div id="loading" class="loading">Loading Data...</div>
   <div id="error" class="error" style="display:none;"></div>
 
-  <table id="customerTable" style="display:none;">
+  <table id="employeeTable" style="display:none;">
     <thead>
       <tr>
-        <th>Customer ID</th>
-        <th>Name</th>
-        <th>Phone</th>
+        <th>Employee ID</th>
+        <th>Full Name</th>
+        <th>Role</th>
       </tr>
     </thead>
-    <tbody id="customerBody"></tbody>
+    <tbody id="employeeBody"></tbody>
   </table>
 
   <script>
-    const getCustomerAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/customers";
+    const getEmployeeAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/employees";
 
-    async function fetchCustomer() {
+    async function fetchEmployees() {
       const loadingEl = document.getElementById('loading');
       const errorEl = document.getElementById('error');
-      const table = document.getElementById('customerTable');
-      const tbody = document.getElementById('customerBody');
+      const table = document.getElementById('employeeTable');
+      const tbody = document.getElementById('employeeBody');
 
       try {
         loadingEl.style.display = 'block';
         errorEl.style.display = 'none';
         table.style.display = 'none';
 
-        const response = await fetch(getCustomerAPI);
+        const response = await fetch(getEmployeeAPI);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-        const customers = await response.json();
+        const employees = await response.json();
         tbody.innerHTML = '';
 
-        customers.forEach(c => {
+        employees.forEach(emp => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${c.id}</td>
-            <td>${c.name}</td>
-            <td>${c.phone}</td>
+            <td>${emp.id}</td>
+            <td>${emp.name}</td>
+            <td>${emp.role}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -65,30 +65,31 @@
       } catch (err) {
         loadingEl.style.display = 'none';
         errorEl.style.display = 'block';
-        errorEl.textContent = 'Failed to load customers: ' + err.message;
+        errorEl.textContent = 'Failed to load employees: ' + err.message;
       }
     }
 
-    fetchCustomer();
+    fetchEmployees();
 
-    async function addNewCustomer(event) {
+    async function addNewEmployee(event) {
       event.preventDefault();
+
       const name = document.getElementById('Name').value;
-      const phone = document.getElementById('Phone').value;
+      const role = document.getElementById('Role').value;
 
       try {
-        await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addCustomer', {
+        await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addEmployee', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ name, phone })
+          body: JSON.stringify({ name, role })
         });
 
-        fetchCustomer();
-        document.getElementById('addCustomerForm').reset();
+        fetchEmployees();
+        document.getElementById('addEmployeeForm').reset();
       } catch (err) {
-        console.error("Error adding customer:", err);
+        console.error("Error adding employee:", err);
       }
     }
   </script>

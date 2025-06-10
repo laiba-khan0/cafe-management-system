@@ -2,52 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Order Items</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Order Items Table</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Order Items</h1>
-    <button id="showOrderItemsFormBtn" class="btn btn-success">+ Add New Order Item</button>
-    <table id="orderItemsTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Order Item ID</th>
-          <th>Order ID</th>
-          <th>Menu Item ID</th>
-          <th>Quantity</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="orderItemsFormSection" class="d-none">
-    <form id="orderItemsForm">
-      <h2 id="orderItemsFormTitle">Insert Order Item</h2>
-      <div class="row">
-        <div class="col">
-          <label>Order ID</label>
-          <input type="number" id="order_id" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Menu Item ID</label>
-          <input type="number" id="menu_item_id" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Quantity</label>
-          <input type="number" id="quantity" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelOrderItemsFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+  <h1>Order Items List</h1>
 
-  <script src="JS/order_items.js"></script>
+  <form id="addOrderItemForm" onsubmit="addNewOrderItem(event)">
+    <input type="number" id="OrderID" placeholder="Order ID" required />
+    <input type="number" id="MenuItemID" placeholder="Menu Item ID" required />
+    <input type="number" id="Quantity" placeholder="Quantity" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="orderItemTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Order Item ID</th>
+        <th>Order ID</th>
+        <th>Menu Item ID</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody id="orderItemBody"></tbody>
+  </table>
+
+  <script>
+    const getOrderItemsAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/order_items";
+
+    async function fetchOrderItems() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const table = document.getElementById('orderItemTable');
+      const tbody = document.getElementById('orderItemBody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        table.style.display = 'none';
+
+        const response = await fetch(getOrderItemsAPI);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const orderItems = await response.json();
+        tbody.innerHTML = '';
+
+        orderItems.forEach(oi => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${oi.id}</td>
+            <td>${oi.order_id}</td>
+            <td>${oi.menu_item_id}</td>
+            <td>${oi.quantity}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        loadingEl.style.display = 'none';
+        table.style.display = 'table';
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Failed to load order items: ' + err.message;
+      }
+    }
+
+    fetchOrderItems();
+
+    async function addNewOrderItem(event) {
+      event.preventDefault();
+      const order_id = parseInt(document.getElementById('OrderID').value);
+      const menu_item_id = parseInt(document.getElementById('MenuItemID').value);
+      const quantity = parseInt(document.getElementById('Quantity').value);
+
+      try {
+        const res = await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addOrderItem', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ order_id, menu_item_id, quantity })
+        });
+
+        fetchOrderItems();
+        document.getElementById('addOrderItemForm').reset();
+      } catch (err) {
+        console.error("Error adding order item:", err);
+      }
+    }
+  </script>
+
 </body>
 </html>

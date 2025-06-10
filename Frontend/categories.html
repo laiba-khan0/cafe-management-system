@@ -2,47 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Categories</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Categories Table</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Categories</h1>
-    <button id="showCategoriesFormBtn" class="btn btn-success">+ Add New Category</button>
-    <table id="categoriesTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Category ID</th>
-          <th>Name</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="categoriesFormSection" class="d-none">
-    <form id="categoriesForm">
-      <h2 id="categoriesFormTitle">Insert Category</h2>
-      <div class="row">
-        <div class="col">
-          <label>Name</label>
-          <input type="text" id="name" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Description</label>
-          <input type="text" id="description" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelCategoriesFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+  <h1>Categories List</h1>
 
-  <script src="JS/categories.js"></script>
+  <form id="addCategoryForm" onsubmit="addNewCategory(event)">
+    <input type="text" id="Name" placeholder="Category Name" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="categoryTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Category ID</th>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody id="categoryBody"></tbody>
+  </table>
+
+  <script>
+    const getCategoryAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/categories";
+
+    async function fetchCategory() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const table = document.getElementById('categoryTable');
+      const tbody = document.getElementById('categoryBody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        table.style.display = 'none';
+
+        const response = await fetch(getCategoryAPI);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const category = await response.json();
+        tbody.innerHTML = '';
+
+        category.forEach(c => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${c.id}</td>
+            <td>${c.name}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        loadingEl.style.display = 'none';
+        table.style.display = 'table';
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Failed to load categories: ' + err.message;
+      }
+    }
+
+    fetchCategory();
+
+    async function addNewCategory(event) {
+      event.preventDefault();
+      const name = document.getElementById('Name').value;
+
+      try {
+        await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addCategory', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ name })
+        });
+
+        fetchCategory();
+        document.getElementById('addCategoryForm').reset();
+      } catch (err) {
+        console.error("Error adding category:", err);
+      }
+    }
+  </script>
+
 </body>
 </html>

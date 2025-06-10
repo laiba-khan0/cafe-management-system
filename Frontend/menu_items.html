@@ -2,52 +2,100 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Menu Items</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Menu Items Table</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Menu Items</h1>
-    <button id="showMenuItemsFormBtn" class="btn btn-success">+ Add New Menu Item</button>
-    <table id="menuItemsTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Item ID</th>
-          <th>Name</th>
-          <th>Price</th>
-          <th>Category ID</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="menuItemsFormSection" class="d-none">
-    <form id="menuItemsForm">
-      <h2 id="menuItemsFormTitle">Insert Menu Item</h2>
-      <div class="row">
-        <div class="col">
-          <label>Name</label>
-          <input type="text" id="name" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Price</label>
-          <input type="number" step="0.01" id="price" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Category ID</label>
-          <input type="number" id="category_id" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelMenuItemsFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+  <h1>Menu Items List</h1>
 
-  <script src="JS/menu_items.js"></script>
+  <form id="addMenuItemForm" onsubmit="addNewMenuItem(event)">
+    <input type="text" id="Name" placeholder="Name" required />
+    <input type="number" step="0.01" id="Price" placeholder="Price" required />
+    <input type="number" id="CategoryID" placeholder="Category ID" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="menuItemTable" style="display:none;">
+    <thead>
+      <tr>
+        <th>Menu Item ID</th>
+        <th>Name</th>
+        <th>Price</th>
+        <th>Category ID</th>
+      </tr>
+    </thead>
+    <tbody id="menuItemBody"></tbody>
+  </table>
+
+<script>
+  const getMenuItemsAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/menu_items";
+
+  async function fetchMenuItems() {
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const table = document.getElementById('menuItemTable');
+    const tbody = document.getElementById('menuItemBody');
+
+    try {
+      loadingEl.style.display = 'block';
+      errorEl.style.display = 'none';
+      table.style.display = 'none';
+
+      const response = await fetch(getMenuItemsAPI);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const data = await response.json();
+      tbody.innerHTML = '';
+
+      data.forEach(row => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.id}</td>
+          <td>${row.name}</td>
+          <td>${row.price}</td>
+          <td>${row.category_id}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      loadingEl.style.display = 'none';
+      table.style.display = 'table';
+    } catch (err) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+      errorEl.textContent = 'Failed to load menu items: ' + err.message;
+    }
+  }
+
+  fetchMenuItems();
+
+  async function addNewMenuItem(event) {
+    event.preventDefault();
+    const name = document.getElementById('Name').value;
+    const price = parseFloat(document.getElementById('Price').value);
+    const category_id = parseInt(document.getElementById('CategoryID').value);
+
+    try {
+      await fetch('https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addMenuItem', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, price, category_id })
+      });
+
+      fetchMenuItems();
+      document.getElementById('addMenuItemForm').reset();
+    } catch (err) {
+      console.error("Error adding menu item:", err);
+    }
+  }
+</script>
+
 </body>
 </html>

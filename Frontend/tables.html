@@ -2,52 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tables</title>
-  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tables List</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Tables</h1>
-    <button id="showTablesFormBtn" class="btn btn-success">+ Add New Table</button>
-    <table id="tablesTable" class="table" style="width: 100%; margin-top: 20px;">
-      <thead>
-        <tr>
-          <th>Table ID</th>
-          <th>Table Number</th>
-          <th>Capacity</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <div id="tablesFormSection" class="d-none">
-    <form id="tablesForm">
-      <h2 id="tablesFormTitle">Insert Table</h2>
-      <div class="row">
-        <div class="col">
-          <label>Table Number</label>
-          <input type="number" id="table_number" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Capacity</label>
-          <input type="number" id="capacity" class="form-control" required />
-        </div>
-        <div class="col">
-          <label>Status</label>
-          <input type="text" id="status" class="form-control" required />
-        </div>
-      </div>
-      <br/>
-      <div class="text-center">
-        <button type="submit" class="btn btn-primary">Submit</button>
-        <button type="button" id="cancelTablesFormBtn" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
-  </div>
+  <h1>Tables List</h1>
 
-  <script src="JS/tables.js"></script>
+  <form id="addTableForm" onsubmit="addNewTable(event)">
+    <input type="number" id="table_number" placeholder="Table Number" required />
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="loading" class="loading">Loading Data...</div>
+  <div id="error" class="error" style="display:none;"></div>
+
+  <table id="tableList" style="display:none;">
+    <thead>
+      <tr>
+        <th>Table ID</th>
+        <th>Table Number</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script>
+    const getTablesAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/getData/tables";
+    const addTableAPI = "https://musical-robot-q7xpp4j9xjwxc4gjj-5000.app.github.dev/addTable";
+
+    async function fetchTables() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('error');
+      const table = document.getElementById('tableList');
+      const tbody = document.getElementById('tableBody');
+
+      try {
+        loadingEl.style.display = 'block';
+        errorEl.style.display = 'none';
+        table.style.display = 'none';
+
+        const response = await fetch(getTablesAPI);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+        const tables = await response.json();
+        tbody.innerHTML = '';
+
+        tables.forEach(t => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${t.id}</td>
+            <td>${t.table_number}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        loadingEl.style.display = 'none';
+        table.style.display = 'table';
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.textContent = 'Failed to load tables: ' + err.message;
+      }
+    }
+
+    fetchTables();
+
+    async function addNewTable(event) {
+      event.preventDefault();
+      const table_number = document.getElementById('table_number').value;
+
+      try {
+        await fetch(addTableAPI, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ table_number })
+        });
+
+        fetchTables();
+        document.getElementById('addTableForm').reset();
+      } catch (err) {
+        console.error("Error adding table:", err);
+      }
+    }
+  </script>
+
 </body>
 </html>
