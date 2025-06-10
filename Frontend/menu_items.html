@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Menu Items</title>
+  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+</head>
+<body>
+  <div class="container">
+    <h1>Menu Items</h1>
+    <button id="showMenuItemsFormBtn" class="btn btn-success">+ Add New Menu Item</button>
+    <table id="menuItemsTable" class="table" style="width: 100%; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Item ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Category ID</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="menuItemsFormSection" class="d-none">
+    <form id="menuItemsForm">
+      <h2 id="menuItemsFormTitle">Insert Menu Item</h2>
+      <div class="row">
+        <div class="col">
+          <label>Name</label>
+          <input type="text" id="name" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Price</label>
+          <input type="number" step="0.01" id="price" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Category ID</label>
+          <input type="number" id="category_id" class="form-control" required />
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" id="cancelMenuItemsFormBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="JS/menu_items.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Items</title>
+  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+</head>
+<body>
+  <div class="container">
+    <h1>Order Items</h1>
+    <button id="showOrderItemsFormBtn" class="btn btn-success">+ Add New Order Item</button>
+    <table id="orderItemsTable" class="table" style="width: 100%; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Order Item ID</th>
+          <th>Order ID</th>
+          <th>Menu Item ID</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="orderItemsFormSection" class="d-none">
+    <form id="orderItemsForm">
+      <h2 id="orderItemsFormTitle">Insert Order Item</h2>
+      <div class="row">
+        <div class="col">
+          <label>Order ID</label>
+          <input type="number" id="order_id" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Menu Item ID</label>
+          <input type="number" id="menu_item_id" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Quantity</label>
+          <input type="number" id="quantity" class="form-control" required />
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" id="cancelOrderItemsFormBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="JS/order_items.js"></script>
+</body>
+</html>

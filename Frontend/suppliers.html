@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Suppliers</title>
+  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+</head>
+<body>
+  <div class="container">
+    <h1>Suppliers</h1>
+    <button id="showSuppliersFormBtn" class="btn btn-success">+ Add New Supplier</button>
+    <table id="suppliersTable" class="table" style="width: 100%; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Supplier ID</th>
+          <th>Name</th>
+          <th>Contact</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="suppliersFormSection" class="d-none">
+    <form id="suppliersForm">
+      <h2 id="suppliersFormTitle">Insert Supplier</h2>
+      <div class="row">
+        <div class="col">
+          <label>Name</label>
+          <input type="text" id="name" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Contact</label>
+          <input type="text" id="contact" class="form-control" required />
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" id="cancelSuppliersFormBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="JS/suppliers.js"></script>
+</body>
+</html>

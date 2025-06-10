@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tables</title>
+  <link rel="stylesheet" href="CSS/STYLE.CSS" />
+</head>
+<body>
+  <div class="container">
+    <h1>Tables</h1>
+    <button id="showTablesFormBtn" class="btn btn-success">+ Add New Table</button>
+    <table id="tablesTable" class="table" style="width: 100%; margin-top: 20px;">
+      <thead>
+        <tr>
+          <th>Table ID</th>
+          <th>Table Number</th>
+          <th>Capacity</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="tablesFormSection" class="d-none">
+    <form id="tablesForm">
+      <h2 id="tablesFormTitle">Insert Table</h2>
+      <div class="row">
+        <div class="col">
+          <label>Table Number</label>
+          <input type="number" id="table_number" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Capacity</label>
+          <input type="number" id="capacity" class="form-control" required />
+        </div>
+        <div class="col">
+          <label>Status</label>
+          <input type="text" id="status" class="form-control" required />
+        </div>
+      </div>
+      <br/>
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" id="cancelTablesFormBtn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="JS/tables.js"></script>
+</body>
+</html>
