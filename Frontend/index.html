@@ -7,80 +7,97 @@
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f9f5f0;
-      margin: 0;
+      background-color: #fef6e4; /* Soft beige */
+      color: #3e2723;
       padding: 20px;
-      color: #4e342e;
     }
 
     header {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
     }
 
     header h1 {
-      font-weight: 700;
-      font-size: 2.5rem;
-      color: #6d4c41;
-      margin-bottom: 5px;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #4e342e;
+      margin-bottom: 10px;
     }
 
     header p {
-      font-size: 1rem;
-      color: #8d6e63;
+      font-size: 1.1rem;
+      color: #6d4c41;
     }
 
     .dashboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 20px;
-      max-width: 1000px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 25px;
+      max-width: 1100px;
       margin: 0 auto;
     }
 
     .card {
-      background: #fff8f1;
-      border-radius: 12px;
-      padding: 25px 20px;
-      box-shadow: 0 6px 12px rgba(78, 52, 46, 0.1);
+      background: #fffaf0; /* Light cream */
+      border-radius: 16px;
+      padding: 30px 20px;
       text-align: center;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 6px 16px rgba(62, 39, 35, 0.08);
+      border: 1px solid #e0d7d1;
+      transition: all 0.3s ease;
       cursor: pointer;
-      border: 1px solid #d7ccc8;
+      position: relative;
     }
 
     .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 16px rgba(78, 52, 46, 0.15);
+      transform: translateY(-6px);
+      box-shadow: 0 12px 20px rgba(62, 39, 35, 0.12);
+      background-color: #fcebd6;
     }
 
     .card h2 {
-      margin: 10px 0;
+      font-size: 1.3rem;
       color: #5d4037;
-      font-size: 1.25rem;
+      margin: 12px 0 8px;
     }
 
     .card p {
-      color: #795548;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      color: #6d4c41;
+    }
+
+    .card::before {
+      content: attr(data-icon);
+      font-size: 2rem;
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .card.centered {
+      justify-self: center;
     }
 
     footer {
-      margin-top: 40px;
+      background-color: #4e342e;
       color: #fff3e0;
-      background-color: #6d4c41;
-      padding: 20px;
       text-align: center;
-      font-family: Arial, sans-serif;
+      padding: 20px 10px;
+      margin-top: 60px;
+      border-radius: 12px;
     }
 
     footer h6 {
-      margin: 4px 0;
-      font-size: 0.95rem;
+      font-size: 1rem;
+      margin: 5px 0;
       color: #ffe0b2;
     }
 
@@ -89,62 +106,76 @@
       text-decoration: none;
       font-weight: bold;
     }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 20px 15px;
+      }
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Cafe Management System</h1>
-    <p>Select a table to see data</p>
+    <p>Select a table to explore and manage data</p>
   </header>
 
   <main class="dashboard">
-    <div class="card" onclick="openTable('categories')">
+    <div class="card" data-icon="📂" onclick="openTable('categories')">
       <h2>Categories</h2>
       <p>Manage menu categories</p>
     </div>
-    <div class="card" onclick="openTable('customers')">
+    <div class="card" data-icon="🧑" onclick="openTable('customers')">
       <h2>Customers</h2>
       <p>Manage customer data</p>
     </div>
-    <div class="card" onclick="openTable('employees')">
+    <div class="card" data-icon="👩‍🍳" onclick="openTable('employees')">
       <h2>Employees</h2>
       <p>Manage staff and roles</p>
     </div>
-    <div class="card" onclick="openTable('inventory')">
+    <div class="card" data-icon="📦" onclick="openTable('inventory')">
       <h2>Inventory</h2>
       <p>Track stock levels</p>
     </div>
-    <div class="card" onclick="openTable('menu_items')">
+    <div class="card" data-icon="🍽️" onclick="openTable('menu_items')">
       <h2>Menu Items</h2>
       <p>Manage menu offerings</p>
     </div>
-    <div class="card" onclick="openTable('orders')">
+    <div class="card" data-icon="📝" onclick="openTable('orders')">
       <h2>Orders</h2>
       <p>Track customer orders</p>
     </div>
-    <div class="card" onclick="openTable('order_items')">
+    <div class="card" data-icon="📋" onclick="openTable('order_items')">
       <h2>Order Items</h2>
       <p>Items in each order</p>
     </div>
-    <div class="card" onclick="openTable('payments')">
+    <div class="card" data-icon="💳" onclick="openTable('payments')">
       <h2>Payments</h2>
       <p>Handle transactions</p>
     </div>
-    <div class="card" onclick="openTable('suppliers')">
+    <div class="card" data-icon="🚚" onclick="openTable('suppliers')">
       <h2>Suppliers</h2>
       <p>Manage suppliers</p>
     </div>
-    <div class="card" onclick="openTable('tables')">
+    <div class="card" data-icon="🍴" onclick="openTable('tables')">
       <h2>Tables</h2>
       <p>Assign and manage tables</p>
+    </div>
+    <div class="card centered" data-icon="📊" onclick="openTable('report')">
+      <h2>Report</h2>
+      <p>Graphs and charts visualization</p>
     </div>
   </main>
 
   <footer>
     <h6>Made by Laiba</h6>
     <h6>&</h6>
-    <h6> Samapati</h6>
+    <h6>Samapati</h6>
   </footer>
 
   <script>

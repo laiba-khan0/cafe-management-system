@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Café Reports</title>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #fff8f0;
+      padding: 20px;
+      color: #3e2723;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #5d4037;
+    }
+    .chart-container {
+      width: 90%;
+      max-width: 720px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fdf5e6;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Café Management Reports</h1>
+
+  <div class="chart-container">
+    <h2>Items per Category</h2>
+    <div id="categoryPieChart" style="width:100%; height:400px;"></div>
+  </div>
+
+  <div class="chart-container">
+    <h2>Payment Method Statistics</h2>
+    <canvas id="paymentChart"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h2>Supplier-wise Payments</h2>
+    <canvas id="supplierChart"></canvas>
+  </div>
+
+  <script>
+    // Load Google Charts
+    google.charts.load('current', { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawCategoryChart);
+
+    function drawCategoryChart() {
+      const data = google.visualization.arrayToDataTable([
+        ['Category', 'Items'],
+        ['Beverages', 20],
+        ['Snacks', 15],
+        ['Main Course', 10],
+        ['Desserts', 8]
+      ]);
+
+      const options = {
+        title: 'Items per Category',
+        pieHole: 0.4,
+        colors: ['#ff8a65', '#fbc02d', '#81c784', '#64b5f6'],
+        legend: { position: 'right', textStyle: { fontSize: 13 } }
+      };
+
+      const chart = new google.visualization.PieChart(document.getElementById('categoryPieChart'));
+      chart.draw(data, options);
+    }
+
+    // Payment Method Chart
+    new Chart(document.getElementById('paymentChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Cash', 'Card', 'UPI'],
+        datasets: [{
+          label: 'Total Amount',
+          data: [5500, 7800, 4300],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffce56']
+        }]
+      },
+      options: {
+        responsive: true,
+        title: {
+          display: true,
+          text: 'Payment Method Statistics'
+        },
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    // Supplier Payments Chart
+    new Chart(document.getElementById('supplierChart'), {
+      type: 'line',
+      data: {
+        labels: ['Supplier A', 'Supplier B', 'Supplier C'],
+        datasets: [{
+          label: 'Total Payments',
+          data: [3000, 4500, 2800],
+          borderColor: '#8e24aa',
+          backgroundColor: 'rgba(142, 36, 170, 0.1)',
+          tension: 0.4,
+          fill: true,
+          pointBackgroundColor: ['#8e24aa', '#ab47bc', '#ce93d8']
+        }]
+      },
+      options: {
+        responsive: true,
+        title: {
+          display: true,
+          text: 'Supplier-wise Payments'
+        },
+        plugins: {
+          legend: { display: true }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
