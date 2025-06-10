@@ -1,206 +1,221 @@
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 5000;
+// ✅ Serve static files from the Frontend directory
+app.use(express.static(path.join(__dirname, 'Frontend')));
 
-app.listen(PORT, () => {
-  console.log(`Connected Successfully on port ${PORT}`);
-});
-
+// Root route
 app.get('/', (req, res) => {
-  res.json('Welcome to Café Management System!');
+  res.json('WELCOME TO CAFE MANAGEMENT SYSTEM');
 });
 
-// Only allow safe table names
-const allowedTables = [
-  'categories', 'customers', 'employees', 'inventory', 'menu_items',
-  'orders', 'order_items', 'payments', 'suppliers', 'tables'
-];
-
-// Dynamic GET data from table
-app.get('/getData/:table', async (req, res) => {
-  const { table } = req.params;
-  if (!allowedTables.includes(table)) {
-    return res.status(400).json({ error: `Invalid table name: ${table}` });
-  }
+// Customers
+app.get('/customers', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM ${table}`);
+    const result = await pool.query('SELECT * FROM customers');
     res.json(result.rows);
   } catch (err) {
-    console.error(`Error fetching data from ${table}:`, err.message);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ Error: err.message });
   }
 });
-
-// Count rows in table
-app.get('/getCount/:table', async (req, res) => {
-  const { table } = req.params;
-  if (!allowedTables.includes(table)) {
-    return res.status(400).json({ error: `Invalid table name: ${table}` });
-  }
+app.post('/customers', async (req, res) => {
+  const { full_name, email, phone } = req.body;
   try {
-    const result = await pool.query(`SELECT COUNT(*) FROM ${table}`);
+    const result = await pool.query(
+      'INSERT INTO customers (full_name, email, phone) VALUES ($1, $2, $3) RETURNING *',
+      [full_name, email, phone]
+    );
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add customer
-app.post('/addCustomer', async (req, res) => {
-  const { name, email, phone } = req.body;
+// Employees
+app.get('/employees', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM employees');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/employees', async (req, res) => {
+  const { name, role, contact } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO customers (name, email, phone) VALUES ($1, $2, $3) RETURNING *`,
-      [name, email, phone]
+      'INSERT INTO employees (name, role, contact) VALUES ($1, $2, $3) RETURNING *',
+      [name, role, contact]
     );
-    res.status(201).json({ message: "Customer added", customer: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add category
-app.post('/addCategory', async (req, res) => {
-  const { name, description } = req.body;
+// Inventory
+app.get('/inventory', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM inventory');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/inventory', async (req, res) => {
+  const { item_name, quantity, unit_price } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO categories (name, description) VALUES ($1, $2) RETURNING *`,
-      [name, description]
+      'INSERT INTO inventory (item_name, quantity, unit_price) VALUES ($1, $2, $3) RETURNING *',
+      [item_name, quantity, unit_price]
     );
-    res.status(201).json({ message: "Category added", category: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add employee
-app.post('/addEmployee', async (req, res) => {
-  const { name, role, salary } = req.body;
+// Menu Items
+app.get('/menu_items', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM menu_items');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/menu_items', async (req, res) => {
+  const { name, description, price } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO employees (name, role, salary) VALUES ($1, $2, $3) RETURNING *`,
-      [name, role, salary]
+      'INSERT INTO menu_items (name, description, price) VALUES ($1, $2, $3) RETURNING *',
+      [name, description, price]
     );
-    res.status(201).json({ message: "Employee added", employee: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add inventory item
-app.post('/addInventory', async (req, res) => {
-  const { item_name, quantity, supplier_id } = req.body;
+// Orders
+app.get('/orders', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM orders');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/orders', async (req, res) => {
+  const { customer_id, order_date, total_amount } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO inventory (item_name, quantity, supplier_id) VALUES ($1, $2, $3) RETURNING *`,
-      [item_name, quantity, supplier_id]
+      'INSERT INTO orders (customer_id, order_date, total_amount) VALUES ($1, $2, $3) RETURNING *',
+      [customer_id, order_date, total_amount]
     );
-    res.status(201).json({ message: "Inventory item added", inventory: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add menu item
-app.post('/addMenuItem', async (req, res) => {
-  const { name, price, category_id } = req.body;
+// Order Items
+app.get('/order_items', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM order_items');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/order_items', async (req, res) => {
+  const { order_id, item_id, quantity } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO menu_items (name, price, category_id) VALUES ($1, $2, $3) RETURNING *`,
-      [name, price, category_id]
+      'INSERT INTO order_items (order_id, item_id, quantity) VALUES ($1, $2, $3) RETURNING *',
+      [order_id, item_id, quantity]
     );
-    res.status(201).json({ message: "Menu item added", item: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add supplier
-app.post('/addSupplier', async (req, res) => {
+// Payments
+app.get('/payments', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM payments');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/payments', async (req, res) => {
+  const { order_id, amount, method, status } = req.body;
+  try {
+    const result = await pool.query(
+      'INSERT INTO payments (order_id, amount, method, status) VALUES ($1, $2, $3, $4) RETURNING *',
+      [order_id, amount, method, status]
+    );
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Suppliers
+app.get('/suppliers', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM suppliers');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/suppliers', async (req, res) => {
   const { name, contact } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO suppliers (name, contact) VALUES ($1, $2) RETURNING *`,
+      'INSERT INTO suppliers (name, contact) VALUES ($1, $2) RETURNING *',
       [name, contact]
     );
-    res.status(201).json({ message: "Supplier added", supplier: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add payment
-app.post('/addPayment', async (req, res) => {
-  const { method, amount } = req.body;
+// Tables
+app.get('/tables', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM tables');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ Error: err.message });
+  }
+});
+app.post('/tables', async (req, res) => {
+  const { table_number, capacity, is_available } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO payments (payment_method, amount_paid, payment_status, payment_date)
-       VALUES ($1, $2, 'completed', CURRENT_TIMESTAMP) RETURNING *`,
-      [method, amount]
+      'INSERT INTO tables (table_number, capacity, is_available) VALUES ($1, $2, $3) RETURNING *',
+      [table_number, capacity, is_available]
     );
-    res.status(201).json({ message: "Payment added", payment: result.rows[0] });
+    res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST: Add table (café seating)
-app.post('/addTable', async (req, res) => {
-  const { table_number, capacity } = req.body;
-  try {
-    const result = await pool.query(
-      `INSERT INTO tables (table_number, capacity) VALUES ($1, $2) RETURNING *`,
-      [table_number, capacity]
-    );
-    res.status(201).json({ message: "Table added", table: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// POST: Add order
-app.post('/addOrder', async (req, res) => {
-  const { customer_id, total_amount, table_id, payment_method } = req.body;
-
-  try {
-    const paymentResult = await pool.query(
-      `INSERT INTO payments (payment_method, amount_paid, payment_status, payment_date)
-       VALUES ($1, $2, 'completed', CURRENT_TIMESTAMP)
-       RETURNING payment_id`,
-      [payment_method, total_amount]
-    );
-    const payment_id = paymentResult.rows[0].payment_id;
-
-    const orderResult = await pool.query(
-      `INSERT INTO orders (customer_id, order_date, total_amount, status, payment_id, table_id)
-       VALUES ($1, CURRENT_TIMESTAMP, $2, 'paid', $3, $4) RETURNING *`,
-      [customer_id, total_amount, payment_id, table_id]
-    );
-
-    res.status(201).json({ message: 'Order created', order: orderResult.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to create order', details: err.message });
-  }
-});
-
-// POST: Add order item
-app.post('/addOrderItem', async (req, res) => {
-  const { order_id, menu_item_id, quantity, price } = req.body;
-  try {
-    const result = await pool.query(
-      `INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_purchase)
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [order_id, menu_item_id, quantity, price]
-    );
-    res.status(201).json({ message: "Order item added", item: result.rows[0] });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+// Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
